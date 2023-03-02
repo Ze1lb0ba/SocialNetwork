@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocialNetwork.BLL.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,23 @@ using System.Threading.Tasks;
 
 namespace SocialNetwork.PLL.Views
 {
-    internal class UserIncommingMessageView
+    public class UserIncommingMessageView
     {
+        public void Show(IEnumerable<Message> incomingMessages)
+        {
+            Console.WriteLine("Входящие сообщения");
+
+
+            if (incomingMessages.Count() == 0)
+            {
+                Console.WriteLine("Входящих сообщения нет");
+                return;
+            }
+
+            incomingMessages.ToList().ForEach(message =>
+            {
+                Console.WriteLine("От кого: {0}. Текст сообщения: {1}", message.SenderEmail, message.Content);
+            });
+        }
     }
 }

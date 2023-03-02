@@ -1,5 +1,6 @@
 ﻿using SocialNetwork.BLL.Exceptions;
 using SocialNetwork.BLL.Models;
+using SocialNetwork.BLL.Service;
 using SocialNetwork.DAL.Enteties;
 using SocialNetwork.DAL.Repositories;
 using System;
@@ -13,10 +14,15 @@ namespace SocialNetwork.BLL.Services
 {
     public class UserService
     {
+        MessageService messageService;
         IUserRepository userRepository;
+        FriendService friendService;
+
         public UserService()
         {
             userRepository = new UserRepository();
+            messageService = new MessageService();
+            friendService = new FriendService();
         }
 
         public void Register(UserRegistrationData userRegistrationData)
@@ -30,15 +36,17 @@ namespace SocialNetwork.BLL.Services
             if (String.IsNullOrEmpty(userRegistrationData.Password))
                 throw new ArgumentNullException();
 
+            if (String.IsNullOrEmpty(userRegistrationData.Email))
+                throw new ArgumentNullException();
+
             if (userRegistrationData.Password.Length < 8)
                 throw new ArgumentNullException();
 
-            if (EmailCheker(userRegistrationData.Email))
+            if (!new EmailAddressAttribute().IsValid(userRegistrationData.Email))
                 throw new ArgumentNullException();
 
             if (userRepository.FindByEmail(userRegistrationData.Email) != null)
                 throw new ArgumentNullException();
-
 
             var userEntity = new UserEntity()
             {
@@ -50,31 +58,6 @@ namespace SocialNetwork.BLL.Services
 
             if (this.userRepository.Create(userEntity) == 0)
                 throw new Exception();
-        }
-
-        public void MessageController(MessageData messageData)
-        {
-            if (EmailCheker(messageData.Email))
-                throw new ArgumentNullException();
-
-            if (userRepository.FindByEmail(messageData.Email) == null)
-                throw new ArgumentNullException();
-
-
-            if (messageData.Message == null)
-                throw new ArgumentNullException();
-
-            if(messageData.Email.Length>5000)
-                throw new ArgumentOutOfRangeException();
-
-            var recepient = userRepository.FindByEmail(messageData.Email);
-
-            var sendedMessage = new MessageEntity()
-            {
-                content = messageData.Message,
-                sender_id = messageData.senderId,
-                recipient_id = recepient.id
-            };
 
         }
 
@@ -92,6 +75,14 @@ namespace SocialNetwork.BLL.Services
         public User FindByEmail(string email)
         {
             var findUserEntity = userRepository.FindByEmail(email);
+            if (findUserEntity is null) throw new UserNotFoundException();
+
+            return ConstructUserModel(findUserEntity);
+        }
+
+        public User FindById(int id)
+        {
+            var findUserEntity = userRepository.FindById(id);
             if (findUserEntity is null) throw new UserNotFoundException();
 
             return ConstructUserModel(findUserEntity);
@@ -117,6 +108,12 @@ namespace SocialNetwork.BLL.Services
 
         private User ConstructUserModel(UserEntity userEntity)
         {
+            var incomingMessages = messageService.GetIncomingMessagesByUserId(userEntity.id);
+
+            var outgoingMessages = messageService.GetOutcomingMessagesByUserId(userEntity.id);
+
+            var friendList = friendService.GetFriendsListByUserId(userEntity.id);
+
             return new User(userEntity.id,
                           userEntity.firstname,
                           userEntity.lastname,
@@ -124,19 +121,11 @@ namespace SocialNetwork.BLL.Services
                           userEntity.email,
                           userEntity.photo,
                           userEntity.favorite_movie,
-                          userEntity.favorite_book);
-        }
-
-        public bool EmailCheker(string email)
-        {
-
-            if (!new EmailAddressAttribute().IsValid(email))
-                return true;
-
-            if (String.IsNullOrEmpty(email))
-                return true;
-
-            else return false;
+                          userEntity.favorite_book,
+                          incomingMessages,
+                          outgoingMessages,
+                          friendList
+                          );
         }
     }
 }
