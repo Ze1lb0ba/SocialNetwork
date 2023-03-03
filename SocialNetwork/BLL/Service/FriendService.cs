@@ -21,21 +21,6 @@ namespace SocialNetwork.BLL.Service
             friendRepository = new FriendRepository();
         }
 
-        public IEnumerable<Friend> GetFriendsListByUserId(int userId)
-        {
-            var friendsList = new List<Friend>();
-
-            friendRepository.FindAllByUserId(userId).ToList().ForEach(m =>
-            {
-                var userIdEntity = userRepository.FindById(m.user_id);
-                var friendIdEntity = userRepository.FindById(m.friend_id);
-
-                friendsList.Add(new Friend(m.id, friendIdEntity.firstname, userIdEntity.lastname, m.user_id, m.friend_id));
-            });
-
-            return friendsList;
-        }
-
         public void AddFriend(FriendAddData friendData)
         {
             if(String.IsNullOrEmpty(friendData.FriendEmail))

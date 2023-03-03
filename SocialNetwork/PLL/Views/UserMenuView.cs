@@ -25,7 +25,7 @@ namespace SocialNetwork.PLL.Views
 
                 Console.WriteLine("Просмотреть информацию о моём профиле (нажмите 1)");
                 Console.WriteLine("Редактировать мой профиль (нажмите 2)");
-                Console.WriteLine("Посмотреть список друзей (нажмите 3)");
+                Console.WriteLine("Добавить пользователя в друзья (нажмите 3)");
                 Console.WriteLine("Написать сообщение (нажмите 4)");
                 Console.WriteLine("Просмотреть входящие сообщения (нажмите 5)");
                 Console.WriteLine("Просмотреть исходящие сообщения (нажмите 6)");
@@ -49,7 +49,7 @@ namespace SocialNetwork.PLL.Views
                         }
                     case "3":
                         {
-                            Program.friendsShowView.Show(user.FriendList, user);
+                            Program.userFriendAddView.Show(user);
                             break;
                         }
 

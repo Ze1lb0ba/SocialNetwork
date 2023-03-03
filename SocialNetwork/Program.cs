@@ -11,6 +11,7 @@ namespace SocialNetwork
         static MessageService messageService;
         static UserService userService;
         static FriendService friendService;
+
         public static MainView mainView;
         public static RegistrationView registrationView;
         public static AuthenticationView authenticationView;
@@ -20,8 +21,6 @@ namespace SocialNetwork
         public static MessageSendingView messageSendingView;
         public static UserIncommingMessageView userIncomingMessageView;
         public static UserOutcommingMessageView userOutcomingMessageView;
-        public static FriendsShowView friendsShowView;
-        public static FriendListView FriendListView;
         public static UserFriendAddView userFriendAddView;
 
         static void Main(string[] args)
@@ -39,8 +38,6 @@ namespace SocialNetwork
             messageSendingView = new MessageSendingView(messageService, userService);
             userIncomingMessageView = new UserIncommingMessageView();
             userOutcomingMessageView = new UserOutcommingMessageView();
-            friendsShowView = new FriendsShowView();
-            FriendListView = new FriendListView();
             userFriendAddView = new UserFriendAddView(friendService, userService);
 
             while (true)
